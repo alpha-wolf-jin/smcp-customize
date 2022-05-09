@@ -270,6 +270,13 @@ ui-egressgateway-84dc658d4d-fdc5s       1/1     Running   0          2m33s
 ui-ingressgateway-5bb969c64c-br66p      1/1     Running   0          2m33s
 
 ```
+> Note: the cutomize ingress & egress have the dedicated pods now.
+- ui-ingressgateway-xxx
+- http-ingressgateway-xxx
+- ui-egressgateway-xxx
+- http-egressgateway-xxx
+
+
 
 ### SVC
 
