@@ -398,6 +398,9 @@ metadata:
   labels:
     app: ui-ingressgateway
     app.kubernetes.io/component: istio-ingress
+    ...
+    istio: ingressgateway
+    ...
   ...
   name: ui-ingressgateway
   namespace: istio-system
