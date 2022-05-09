@@ -161,8 +161,6 @@ spec:
 
   policy: {}
 
-  policy: {}
-
   telemetry:
     type:  Istiod # Istiod or Mixer
   addons:
