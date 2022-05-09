@@ -300,7 +300,7 @@ zipkin                      ClusterIP      172.30.225.80    <none>         9411/
 
 ```
 
-### all reources
+### all resources
 
 ```
 [root@localhost aro08]# oc get all,ep
