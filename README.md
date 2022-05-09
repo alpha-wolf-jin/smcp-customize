@@ -386,3 +386,53 @@ endpoints/zipkin                      10.128.2.27:9411                          
 [root@localhost aro08]# 
 
 ```
+
+### Mapping SVC and POD
+
+```
+[root@localhost aro08]# oc get svc ui-ingressgateway -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  ...
+  labels:
+    app: ui-ingressgateway
+    app.kubernetes.io/component: istio-ingress
+  ...
+  name: ui-ingressgateway
+  namespace: istio-system
+  ...
+spec:
+  ...
+  clusterIPs:
+  - 172.30.134.116
+  ...
+  selector:
+    app: ui-ingressgateway
+    istio: ingressgateway
+  ...
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 20.237.32.49
+
+[root@localhost aro08]# oc get pod  -l app=ui-ingressgateway,istio=ingressgateway
+NAME                                 READY   STATUS    RESTARTS   AGE
+ui-ingressgateway-5bb969c64c-br66p   1/1     Running   0          29m
+
+[root@localhost aro08]# oc get pod  -l app=http-ingressgateway,istio=ingressgateway
+NAME                                   READY   STATUS    RESTARTS   AGE
+http-ingressgateway-7b69c76759-56xzs   1/1     Running   0          29m
+
+[root@localhost aro08]# oc get pod  -l app=ui-egressgateway,istio=egressgateway
+NAME                                READY   STATUS    RESTARTS   AGE
+ui-egressgateway-84dc658d4d-fdc5s   1/1     Running   0          29m
+
+[root@localhost aro08]# oc get pod  -l app=http-egressgateway,istio=egressgateway
+NAME                                  READY   STATUS    RESTARTS   AGE
+http-egressgateway-544f75d54d-dp5qt   1/1     Running   0          29m
+
+
+
+```
