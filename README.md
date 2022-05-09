@@ -436,6 +436,39 @@ ui-egressgateway-84dc658d4d-fdc5s   1/1     Running   0          29m
 NAME                                  READY   STATUS    RESTARTS   AGE
 http-egressgateway-544f75d54d-dp5qt   1/1     Running   0          29m
 
+```
+
+### Mapping Ingress & Egress resources
+
+```
+
+[root@localhost aro08]# oc get all  -l app=ui-ingressgateway,istio=ingressgateway
+NAME                                     READY   STATUS    RESTARTS   AGE
+pod/ui-ingressgateway-5bb969c64c-br66p   1/1     Running   0          32m
+
+NAME                        TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
+service/ui-ingressgateway   LoadBalancer   172.30.134.116   20.237.32.49   15021:32675/TCP,80:30623/TCP,443:30481/TCP,15443:31772/TCP   32m
+
+NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ui-ingressgateway   1/1     1            1           32m
+
+NAME                                           DESIRED   CURRENT   READY   AGE
+replicaset.apps/ui-ingressgateway-5bb969c64c   1         1         1       32m
+
+NAME                                         HOST/PORT                                                     PATH   SERVICES            PORT   TERMINATION   WILDCARD
+route.route.openshift.io/ui-ingressgateway   ui-ingressgateway-istio-system.apps.aro.example.opentlc.com          ui-ingressgateway   8080                 None
+
+
+
+[root@localhost aro08]# oc get all -l app=ui-egressgateway,istio=egressgateway
+NAME                                    READY   STATUS    RESTARTS   AGE
+pod/ui-egressgateway-84dc658d4d-fdc5s   1/1     Running   0          34m
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ui-egressgateway   1/1     1            1           34m
+
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/ui-egressgateway-84dc658d4d   1         1         1       34m
 
 
 ```
