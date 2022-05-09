@@ -1,0 +1,157 @@
+apiVersion: maistra.io/v2
+kind: ServiceMeshControlPlane
+metadata:
+  name: basic
+spec:
+  proxy:
+    runtime:
+      container:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
+  tracing:
+    type: Jaeger
+  gateways:
+    ingress: 
+      service:
+        type: ClusterIP
+        ports:
+        - name: status-port
+          port: 15020
+        - name: http2
+          port: 80
+          targetPort: 8080
+        - name: https
+          port: 443
+          targetPort: 8443
+      meshExpansionPorts: []
+    egress: 
+      service:
+        type: ClusterIP
+        ports:
+        - name: status-port
+          port: 15020
+        - name: http2
+          port: 80
+          targetPort: 8080
+        - name: https
+          port: 443
+          targetPort: 8443
+    additionalIngress:
+      ui-egressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: ui-egressgateway
+        service: 
+          type: LoadBalancer
+      http-egressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: http-egressgateway
+        service: 
+          type: LoadBalancer
+
+
+  policy: {}
+
+  telemetry:
+    type:  Istiod # Istiod or Mixer
+  addons:
+    grafana:
+      enabled: true
+      install:
+        config:
+          env: {}
+          envSecrets: {}
+        persistence:
+          enabled: true
+          storageClassName: managed-premium
+          accessMode: ReadWriteOnce
+          capacity:
+            requests:
+              storage: 5Gi
+        service:
+          ingress:
+            contextPath: /grafana
+            tls:
+              termination: reencrypt
+    kiali:
+      name: kiali
+      enabled: true
+      install: # install kiali CR if not present
+        dashboard:
+          viewOnly: false
+          enableGrafana: true
+          enableTracing: true
+          enablePrometheus: true
+      service:
+        ingress:
+          contextPath: /kiali
+          #    jaeger:
+          #      name: jaeger
+          #      install:
+          #        storage:
+          #          type: Elasticsearch # or Memory
+          #          memory:
+          #            maxTraces: 100000
+          #          elasticsearch:
+          #            nodeCount: 3
+          #            storage: {}
+          #            redundancyPolicy: SingleRedundancy
+          #            indexCleaner: {}
+          #        ingress: {} # jaeger ingress configuration
+  runtime:
+    components:
+      pilot:
+        deployment:
+          replicas: 2
+        pod:
+          affinity: {}
+        container:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+      grafana:
+        deployment: {}
+        pod: {}
+      kiali:
+        deployment: {}
+        pod: {}
