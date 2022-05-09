@@ -42,6 +42,50 @@ spec:
           port: 443
           targetPort: 8443
     additionalIngress:
+      ui-ingressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: ui-ingressgateway
+        service: 
+          type: LoadBalancer
+      http-ingressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: http-ingressgateway
+        service: 
+          type: LoadBalancer
+
+    additionalEgress:
       ui-egressgateway:
         enabled: true
         runtime:
@@ -61,8 +105,7 @@ spec:
             metadata:
              labels:
                app: ui-egressgateway
-        service: 
-          type: LoadBalancer
+        service: {}
       http-egressgateway:
         enabled: true
         runtime:
@@ -82,9 +125,9 @@ spec:
             metadata:
              labels:
                app: http-egressgateway
-        service: 
-          type: LoadBalancer
+        service: {}
 
+  policy: {}
 
   policy: {}
 
