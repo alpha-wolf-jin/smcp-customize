@@ -470,5 +470,27 @@ deployment.apps/ui-egressgateway   1/1     1            1           34m
 NAME                                          DESIRED   CURRENT   READY   AGE
 replicaset.apps/ui-egressgateway-84dc658d4d   1         1         1       34m
 
+```
+
+## Jaeger Persistent Storage
+
+>elasticsearch redundancyPolicy 
+Refer to : https://docs.openshift.com/container-platform/4.7/logging/config/cluster-logging-log-store.html
+- FullRedundancy
+- MultipleRedundancy
+- SingleRedundancy
+- ZeroRedundancy
+> Select ZeroRedundancy due to tight resource
+
+## Deploy more work node with 
+
+
+```
+[root@localhost aro08]# oc get -o jsonpath='{.status.infrastructureName}{"\n"}' infrastructure cluster
+aro-nnkdl
+
+[root@localhost aro08]# export INFRA_ID=aro-nnkdl
+
+[root@localhost aro08]# export RESOURCE_GROUP=openenv-dk7fm
 
 ```

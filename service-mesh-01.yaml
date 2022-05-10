@@ -42,27 +42,92 @@ spec:
           port: 443
           targetPort: 8443
     additionalIngress:
-      additionalEgress:
-        ui-egressgateway:
-          enabled: true
-          runtime:
-            deployment:
-              autoScaling:
-                enabled: false
-              replicas: 1
-            container:
-              resources:
-                requests:
-                  cpu: 10m
-                  memory: 50Mi
-                limits:
-                  cpu: 100m
-                  memory: 200Mi
-            pod:
-              metadata:
-               labels:
-                 app: ui-egressgateway
-          service: {}
+      ui-ingressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: ui-ingressgateway
+        service: 
+          type: LoadBalancer
+      http-ingressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: http-ingressgateway
+        service: 
+          type: LoadBalancer
+
+    additionalEgress:
+      ui-egressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: ui-egressgateway
+        service: {}
+      http-egressgateway:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+            replicas: 1
+          container:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          pod:
+            metadata:
+             labels:
+               app: http-egressgateway
+        service: {}
+
+  policy: {}
 
   policy: {}
 
@@ -105,12 +170,19 @@ spec:
         storage:
           type: Elasticsearch # or Memory
           memory:
-            maxTraces: 100000
+            maxTraces: 100
           elasticsearch:
             nodeCount: 3
             storage: {}
-            redundancyPolicy: SingleRedundancy
+            redundancyPolicy: ZeroRedundancy
             indexCleaner: {}
+            resources:
+              requests:
+                cpu: 1
+                memory: 4Gi 
+              limits:
+                cpu: 1
+                memory: 4Gi
         ingress: {} # jaeger ingress configuration
   runtime:
     components:

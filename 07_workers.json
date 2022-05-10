@@ -53,7 +53,7 @@
       {
         "name" : "vmNames",
         "count" :  "[parameters('numberOfNodes')]",
-        "input" : "[concat(parameters('baseName'), '-worker-', variables('location'), '-', copyIndex('vmNames', 1))]"
+        "input" : "[concat(parameters('baseName'), '-worker-', variables('location'), '-', copyIndex('vmNames', 4))]"
       }
     ]
   },
