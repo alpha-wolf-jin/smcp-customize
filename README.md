@@ -782,3 +782,44 @@ curl: (7) Failed to connect to 20.237.1.223 port 80: Connection timed out
 hello-world-01
 
 ```
+
+# Use the FQDN
+
+```
+# oc edit gw http-ingress-gateway
+spec:
+  selector:
+    app: http-ingressgateway
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - 'web.singtel.example.com'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+
+# oc edit VirtualService http-ingress-gateway
+spec:
+  gateways:
+  - http-ingress-gateway
+  hosts:
+  - 'web.singtel.example.com'
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: web
+        port:
+          number: 8080
+
+# curl http://web.singtel.example.com
+hello-world-01
+
+# curl http://20.237.1.125
+# 
+# Now only specific FQDN works
+
+```
