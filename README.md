@@ -776,9 +776,9 @@ curl: (7) Failed to connect to 20.237.1.223 port 80: Connection timed out
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-20.237.1.125   web.singtel.example.com
+20.237.1.125   websingtel.example.com
 
-# curl http://web.singtel.example.com
+# curl http://websingtel.example.com
 hello-world-01
 
 ```
@@ -793,7 +793,7 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - 'web.singtel.example.com'
+    - 'websingtel.example.com'
     port:
       name: http
       number: 80
@@ -804,7 +804,7 @@ spec:
   gateways:
   - http-ingress-gateway
   hosts:
-  - 'web.singtel.example.com'
+  - 'websingtel.example.com'
   http:
   - match:
     - uri:
@@ -815,11 +815,170 @@ spec:
         port:
           number: 8080
 
-# curl http://web.singtel.example.com
+# curl http://websingtel.example.com
 hello-world-01
 
 # curl http://20.237.1.125
 # 
 # Now only specific FQDN works
+
+```
+
+# Configure custom certificate for the Service Mesh ingress gateway
+
+https://access.redhat.com/solutions/6650301
+
+## Self-signed certificates and key generation
+
+### Create a root CA certificate and private key to sign the certificates for your services
+
+```
+# openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=example Inc./CN=example.com' -keyout example.com.key -out example.com.crt
+
+```
+
+### Create a certificate and a private key for *.example.com
+
+```
+# openssl req -out httpbin.example.com.csr -newkey rsa:2048 -nodes -keyout httpbin.example.com.key -subj "/CN=*.example.com/O=httpbin organization"
+
+# openssl x509 -req -days 365 -CA example.com.crt -CAkey example.com.key -set_serial 0 -in httpbin.example.com.csr -out httpbin.example.com.crt
+
+# ls -artl
+...
+-rw-------.  1 root root    1704 May 22 01:02 example.com.key
+-rw-r--r--.  1 root root    1180 May 22 01:02 example.com.crt
+-rw-------.  1 root root    1704 May 22 01:03 httpbin.example.com.key
+-rw-r--r--.  1 root root     940 May 22 01:03 httpbin.example.com.csr
+-rw-r--r--.  1 root root    1046 May 22 01:04 httpbin.example.com.crt
+
+```
+
+### Create a secret for serving the certificate
+
+```
+# oc create secret tls webcert --key=httpbin.example.com.key --cert=httpbin.example.com.crt -n istio-system
+
+```
+
+### Make the required configurations to make the traffic reach at istio-ingress gateway
+
+- If it is a cloud environment, use ingressgateway  service as loadbalacer to get externalIP and do the infra level changes by adding A records.
+- For on-premise, bare-metal environments, use the NodePort service.
+
+### Review the services in the control plane namespace
+
+```
+# oc get svc -l app=http-ingressgateway,istio=ingressgateway -n istio-system
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                                                      AGE
+http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   6h9m
+
+```
+
+**After confirming that traffic can reach the ingress gateway, add a gateway rule to allow the traffic to the cluster**
+
+```
+# oc project
+Using project "ingress-lb" on server "https://api.aro.example.opentlc.com:6443".
+
+# oc get gw
+NAME                   AGE
+http-ingress-gateway   88m
+
+# oc edit gw http-ingress-gateway
+. . .
+spec:
+  selector:
+    app: http-ingressgateway
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - websingtel.example.com
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: webcert
+
+# curl https://websingtel.example.com  --cacert example.com.crt
+hello-world-01
+
+# curl https://websingtel.example.com  --cacert example.com.crt
+hello-world-01
+[root@localhost aro08]# curl -kvvI https://websingtel.example.com  --cacert example.com.crt
+* Rebuilt URL to: https://websingtel.example.com/
+*   Trying 20.237.1.125...
+* TCP_NODELAY set
+* Connected to websingtel.example.com (20.237.1.125) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: example.com.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.3 (OUT), TLS handshake, [no content] (0):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: CN=*.example.com; O=httpbin organization
+*  start date: May 21 17:04:22 2022 GMT
+*  expire date: May 21 17:04:22 2023 GMT
+*  issuer: O=example Inc.; CN=example.com
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+* TLSv1.3 (OUT), TLS app data, [no content] (0):
+* TLSv1.3 (OUT), TLS app data, [no content] (0):
+* TLSv1.3 (OUT), TLS app data, [no content] (0):
+* Using Stream ID: 1 (easy handle 0x55876c2186b0)
+* TLSv1.3 (OUT), TLS app data, [no content] (0):
+> HEAD / HTTP/2
+> Host: websingtel.example.com
+> User-Agent: curl/7.61.1
+> Accept: */*
+> 
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* TLSv1.3 (IN), TLS handshake, [no content] (0):
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* TLSv1.3 (IN), TLS app data, [no content] (0):
+* Connection state changed (MAX_CONCURRENT_STREAMS == 2147483647)!
+* TLSv1.3 (OUT), TLS app data, [no content] (0):
+* TLSv1.3 (IN), TLS app data, [no content] (0):
+< HTTP/2 200 
+HTTP/2 200 
+< date: Sat, 21 May 2022 17:20:49 GMT
+date: Sat, 21 May 2022 17:20:49 GMT
+< server: istio-envoy
+server: istio-envoy
+< last-modified: Sat, 21 May 2022 15:38:07 GMT
+last-modified: Sat, 21 May 2022 15:38:07 GMT
+< etag: "f-5df8764b9c464"
+etag: "f-5df8764b9c464"
+< accept-ranges: bytes
+accept-ranges: bytes
+< content-length: 15
+content-length: 15
+< content-type: text/html; charset=UTF-8
+content-type: text/html; charset=UTF-8
+< x-envoy-upstream-service-time: 4
+x-envoy-upstream-service-time: 4
+
+< 
+* Connection #0 to host websingtel.example.com left intact
 
 ```
