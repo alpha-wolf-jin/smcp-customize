@@ -556,6 +556,171 @@ spec:
 NAME                  READY   STATUS    RESTARTS   AGE
 web-75df46b89-t7fsc   1/1     Running   0          27s
 
+# oc get deploy
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+web    1/1     1            1           18m
+
+# oc expose deploy web
+
+# oc get svc
+NAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+web    ClusterIP   172.30.29.58   <none>        8080/TCP,8443/TCP   20s
+
+# oc expose svc web
+
+# oc get route
+NAME   HOST/PORT                                       PATH   SERVICES   PORT     TERMINATION   WILDCARD
+web    web-ingress-lb.apps.ipm9b8a3.eastus.aroapp.io          web        port-1                 None
+
+# curl web-ingress-lb.apps.ipm9b8a3.eastus.aroapp.io
+hello-world-01
+
+# oc delete route web
+
+
 ```
 
+# Setup Service Mesh
 
+```
+# oc project istio-system
+
+# oc get svc -l istio=ingressgateway
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                                                      AGE
+http-ingressgateway    LoadBalancer   172.30.188.252   20.121.183.22    15021:31356/TCP,80:30576/TCP,443:30806/TCP,15443:30850/TCP   79m
+istio-ingressgateway   ClusterIP      172.30.110.3     <none>           15020/TCP,80/TCP,443/TCP                                     79m
+ui-ingressgateway      LoadBalancer   172.30.22.192    20.121.183.126   15021:32540/TCP,80:30093/TCP,443:31261/TCP,15443:31850/TCP   79m
+
+# vim service-mesh-roll.yaml
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+spec:
+  members:
+  - ingress-lb
+
+# oc apply -f $HOME/service-mesh-roll.yaml
+
+# oc project ingress-lb
+
+# vim deploy-http.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: web
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        deployment: web
+...
+
+# oc apply -f  deploy-http.yaml
+
+# cat service-mesh-roll.yaml
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+  - ingress-lb
+
+# oc apply -f service-mesh-roll.yaml
+
+# oc get pod
+NAME                   READY   STATUS    RESTARTS   AGE
+web-866dd6f769-5878r   1/1     Running   0          3m1s
+
+# oc delete pod web-866dd6f769-5878r
+
+# oc get pod
+NAME                   READY   STATUS    RESTARTS   AGE
+web-866dd6f769-vmpmw   2/2     Running   0          58s
+
+```
+> 1. project is added into ServiceMeshMemberRoll
+> 2. annotations (sidecar.istio.io/inject: "true") is added into deployment conf
+> 3. Pod is created. When first 2 are configure, the sidcar container will be injected into new POD automatically.
+
+
+```
+# oc label svc http-ingressgateway istio-type=http -n istio-system
+
+# oc label svc ui-ingressgateway istio-type=ui -n istio-system
+
+[root@localhost aro08]# cat service-mesh-gw.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: http-ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+    istio-type: http
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - '*'
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: http-ingress-gateway
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - http-ingress-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: web
+        port:
+          number: 8080
+
+# oc apply -f service-mesh-gw.yaml -n ingress-lb
+
+# oc get gateway
+NAME                   AGE
+http-ingress-gateway   27s
+
+# oc get VirtualService
+NAME                   GATEWAYS                   HOSTS   AGE
+http-ingress-gateway   ["http-ingress-gateway"]   ["*"]   40s
+
+# oc get svc
+NAME   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+web    ClusterIP   172.30.131.112   <none>        8080/TCP,8443/TCP   2m49s
+
+
+# oc get svc -l istio-type=http -n istio-system
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                                                      AGE
+http-ingressgateway   LoadBalancer   172.30.188.252   20.121.183.22   15021:31356/TCP,80:30576/TCP,443:30806/TCP,15443:30850/TCP   3h41m
+
+
+# Due to the firewall, cannot access the external IP 20.121.183.22.  Login pod and access this external IP
+# oc rsh web-866dd6f769-vmpmw
+
+sh-4.4$ curl http://172.30.131.112:8080
+hello-world-01
+
+```
