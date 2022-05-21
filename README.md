@@ -652,7 +652,7 @@ spec:
   members:
   - ingress-lb
 
-# oc apply -f $HOME/service-mesh-roll.yaml
+# oc apply -f service-mesh-roll.yaml
 
 # oc project ingress-lb
 
