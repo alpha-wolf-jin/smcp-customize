@@ -705,7 +705,7 @@ web-866dd6f769-vmpmw   2/2     Running   0          58s
 ```
 > 1. project is added into ServiceMeshMemberRoll
 > 2. annotations (sidecar.istio.io/inject: "true") is added into deployment conf
-> 3. Pod is created. When first 2 are configure, the sidcar container will be injected into new POD automatically.
+> 3. When first 2 are configured, the sidcar container will be injected into new POD automatically during provison. If there is no new provision, the injection will not happen.
 
 
 ```
