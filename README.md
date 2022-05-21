@@ -547,7 +547,6 @@ aro-nnkdl
 # oc create configmap index-html --from-file=index.html=./index-01.html
 
 # vim deploy-http.yaml 
-# oc get pod
 apiVersion: apps/v1
 kind: Deployment
 metadata:
