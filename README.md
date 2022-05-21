@@ -288,20 +288,24 @@ ui-ingressgateway-5bb969c64c-br66p      1/1     Running   0          2m33s
 ```
 [root@localhost aro08]# oc get svc
 NAME                        TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
-grafana                     ClusterIP      172.30.224.24    <none>         3000/TCP                                                     3m37s
-http-egressgateway          ClusterIP      172.30.154.14    <none>         80/TCP,443/TCP,15443/TCP                                     3m38s
-http-ingressgateway         LoadBalancer   172.30.181.240   20.237.32.58   15021:31712/TCP,80:31045/TCP,443:30368/TCP,15443:32633/TCP   3m38s
-istio-egressgateway         ClusterIP      172.30.116.82    <none>         15020/TCP,80/TCP,443/TCP                                     3m38s
-istio-ingressgateway        ClusterIP      172.30.183.91    <none>         15020/TCP,80/TCP,443/TCP                                     3m39s
-istiod-basic                ClusterIP      172.30.71.0      <none>         15010/TCP,15012/TCP,443/TCP,15014/TCP,8188/TCP               3m49s
-jaeger-agent                ClusterIP      None             <none>         5775/UDP,5778/TCP,6831/UDP,6832/UDP                          3m39s
-jaeger-collector            ClusterIP      172.30.63.55     <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       3m39s
-jaeger-collector-headless   ClusterIP      None             <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       3m39s
-jaeger-query                ClusterIP      172.30.155.56    <none>         443/TCP,16685/TCP                                            3m39s
-prometheus                  ClusterIP      172.30.184.39    <none>         9090/TCP                                                     3m43s
-ui-ingressgateway           LoadBalancer   172.30.134.116   20.237.32.49   15021:32675/TCP,80:30623/TCP,443:30481/TCP,15443:31772/TCP   3m38s
-wasm-cacher-basic           ClusterIP      172.30.84.78     <none>         80/TCP                                                       3m17s
-zipkin                      ClusterIP      172.30.225.80    <none>         9411/TCP                                                     3m39s
+elasticsearch               ClusterIP      172.30.106.79    <none>         9200/TCP                                                     26m
+elasticsearch-cluster       ClusterIP      172.30.93.107    <none>         9300/TCP                                                     26m
+elasticsearch-metrics       ClusterIP      172.30.253.251   <none>         60001/TCP                                                    26m
+grafana                     ClusterIP      172.30.111.72    <none>         3000/TCP                                                     26m
+http-egressgateway          ClusterIP      172.30.230.101   <none>         80/TCP,443/TCP,15443/TCP                                     26m
+http-ingressgateway         LoadBalancer   172.30.47.117    20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   26m
+istio-egressgateway         ClusterIP      172.30.6.13      <none>         15020/TCP,80/TCP,443/TCP                                     26m
+istio-ingressgateway        ClusterIP      172.30.194.106   <none>         15020/TCP,80/TCP,443/TCP                                     26m
+istiod-basic                ClusterIP      172.30.11.19     <none>         15010/TCP,15012/TCP,443/TCP,15014/TCP,8188/TCP               26m
+jaeger-collector            ClusterIP      172.30.233.114   <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       25m
+jaeger-collector-headless   ClusterIP      None             <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       25m
+jaeger-query                ClusterIP      172.30.213.227   <none>         443/TCP,16685/TCP                                            25m
+kiali                       ClusterIP      172.30.246.6     <none>         20001/TCP,9090/TCP                                           10m
+prometheus                  ClusterIP      172.30.64.14     <none>         9090/TCP                                                     26m
+ui-egressgateway            ClusterIP      172.30.153.241   <none>         80/TCP,443/TCP,15443/TCP                                     26m
+ui-ingressgateway           LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   26m
+wasm-cacher-basic           ClusterIP      172.30.75.8      <none>         80/TCP                                                       11m
+zipkin                      ClusterIP      172.30.180.144   <none>         9411/TCP       
 
 ```
 
@@ -309,85 +313,116 @@ zipkin                      ClusterIP      172.30.225.80    <none>         9411/
 
 ```
 [root@localhost aro08]# oc get all,ep
-NAME                                        READY   STATUS    RESTARTS   AGE
-pod/grafana-99d6457f-gbbrm                  2/2     Running   0          9m8s
-pod/http-egressgateway-544f75d54d-dp5qt     1/1     Running   0          9m9s
-pod/http-ingressgateway-7b69c76759-56xzs    1/1     Running   0          9m9s
-pod/istio-egressgateway-7fd685d798-2dnk8    1/1     Running   0          9m9s
-pod/istio-ingressgateway-79bf956b68-dd8nm   1/1     Running   0          9m10s
-pod/istiod-basic-6867796997-nkprr           1/1     Running   0          9m20s
-pod/istiod-basic-6867796997-vrrts           1/1     Running   0          9m19s
-pod/jaeger-8c46c4f58-lc4k7                  2/2     Running   0          9m10s
-pod/prometheus-69cd5746f-xkzfg              2/2     Running   0          9m14s
-pod/ui-egressgateway-84dc658d4d-fdc5s       1/1     Running   0          9m9s
-pod/ui-ingressgateway-5bb969c64c-br66p      1/1     Running   0          9m9s
-pod/wasm-cacher-basic-567568d75-6xs79       1/1     Running   0          8m48s
+NAME                                                         READY   STATUS    RESTARTS      AGE
+pod/elasticsearch-cdm-istiosystemjaeger-1-76478b4c-7c9sz     2/2     Running   0             27m
+pod/elasticsearch-cdm-istiosystemjaeger-2-65768cf499-m4gv7   2/2     Running   0             27m
+pod/elasticsearch-cdm-istiosystemjaeger-3-6d479dc-2q9fz      2/2     Running   0             27m
+pod/grafana-99d6457f-2zpzq                                   2/2     Running   0             24m
+pod/http-egressgateway-544f75d54d-wjr4q                      1/1     Running   0             27m
+pod/http-ingressgateway-7b69c76759-9cmns                     1/1     Running   0             27m
+pod/istio-egressgateway-7fd685d798-9k7lf                     1/1     Running   0             27m
+pod/istio-ingressgateway-79bf956b68-9cztf                    1/1     Running   0             27m
+pod/istiod-basic-6867796997-bxwc8                            1/1     Running   0             27m
+pod/istiod-basic-6867796997-wbg6d                            1/1     Running   0             27m
+pod/jaeger-collector-5498fff9c9-x98jr                        1/1     Running   1 (25m ago)   26m
+pod/jaeger-query-5775b96574-6929f                            3/3     Running   1 (25m ago)   25m
+pod/kiali-74c78868df-z75bd                                   1/1     Running   0             11m
+pod/prometheus-69cd5746f-x6kxz                               2/2     Running   0             27m
+pod/ui-egressgateway-84dc658d4d-hh2kg                        1/1     Running   0             27m
+pod/ui-ingressgateway-5bb969c64c-s76vz                       1/1     Running   0             27m
+pod/wasm-cacher-basic-567568d75-wrgp8                        1/1     Running   0             11m
 
 NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
-service/grafana                     ClusterIP      172.30.224.24    <none>         3000/TCP                                                     9m8s
-service/http-egressgateway          ClusterIP      172.30.154.14    <none>         80/TCP,443/TCP,15443/TCP                                     9m9s
-service/http-ingressgateway         LoadBalancer   172.30.181.240   20.237.32.58   15021:31712/TCP,80:31045/TCP,443:30368/TCP,15443:32633/TCP   9m9s
-service/istio-egressgateway         ClusterIP      172.30.116.82    <none>         15020/TCP,80/TCP,443/TCP                                     9m9s
-service/istio-ingressgateway        ClusterIP      172.30.183.91    <none>         15020/TCP,80/TCP,443/TCP                                     9m10s
-service/istiod-basic                ClusterIP      172.30.71.0      <none>         15010/TCP,15012/TCP,443/TCP,15014/TCP,8188/TCP               9m20s
-service/jaeger-agent                ClusterIP      None             <none>         5775/UDP,5778/TCP,6831/UDP,6832/UDP                          9m10s
-service/jaeger-collector            ClusterIP      172.30.63.55     <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       9m10s
-service/jaeger-collector-headless   ClusterIP      None             <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       9m10s
-service/jaeger-query                ClusterIP      172.30.155.56    <none>         443/TCP,16685/TCP                                            9m10s
-service/prometheus                  ClusterIP      172.30.184.39    <none>         9090/TCP                                                     9m14s
-service/ui-ingressgateway           LoadBalancer   172.30.134.116   20.237.32.49   15021:32675/TCP,80:30623/TCP,443:30481/TCP,15443:31772/TCP   9m9s
-service/wasm-cacher-basic           ClusterIP      172.30.84.78     <none>         80/TCP                                                       8m48s
-service/zipkin                      ClusterIP      172.30.225.80    <none>         9411/TCP                                                     9m10s
+service/elasticsearch               ClusterIP      172.30.106.79    <none>         9200/TCP                                                     27m
+service/elasticsearch-cluster       ClusterIP      172.30.93.107    <none>         9300/TCP                                                     27m
+service/elasticsearch-metrics       ClusterIP      172.30.253.251   <none>         60001/TCP                                                    27m
+service/grafana                     ClusterIP      172.30.111.72    <none>         3000/TCP                                                     27m
+service/http-egressgateway          ClusterIP      172.30.230.101   <none>         80/TCP,443/TCP,15443/TCP                                     27m
+service/http-ingressgateway         LoadBalancer   172.30.47.117    20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   27m
+service/istio-egressgateway         ClusterIP      172.30.6.13      <none>         15020/TCP,80/TCP,443/TCP                                     27m
+service/istio-ingressgateway        ClusterIP      172.30.194.106   <none>         15020/TCP,80/TCP,443/TCP                                     27m
+service/istiod-basic                ClusterIP      172.30.11.19     <none>         15010/TCP,15012/TCP,443/TCP,15014/TCP,8188/TCP               27m
+service/jaeger-collector            ClusterIP      172.30.233.114   <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       26m
+service/jaeger-collector-headless   ClusterIP      None             <none>         9411/TCP,14250/TCP,14267/TCP,14268/TCP                       26m
+service/jaeger-query                ClusterIP      172.30.213.227   <none>         443/TCP,16685/TCP                                            26m
+service/kiali                       ClusterIP      172.30.246.6     <none>         20001/TCP,9090/TCP                                           11m
+service/prometheus                  ClusterIP      172.30.64.14     <none>         9090/TCP                                                     27m
+service/ui-egressgateway            ClusterIP      172.30.153.241   <none>         80/TCP,443/TCP,15443/TCP                                     27m
+service/ui-ingressgateway           LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   27m
+service/wasm-cacher-basic           ClusterIP      172.30.75.8      <none>         80/TCP                                                       11m
+service/zipkin                      ClusterIP      172.30.180.144   <none>         9411/TCP                                                     27m
 
-NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/grafana                1/1     1            1           9m9s
-deployment.apps/http-egressgateway     1/1     1            1           9m10s
-deployment.apps/http-ingressgateway    1/1     1            1           9m10s
-deployment.apps/istio-egressgateway    1/1     1            1           9m10s
-deployment.apps/istio-ingressgateway   1/1     1            1           9m11s
-deployment.apps/istiod-basic           2/2     2            2           9m21s
-deployment.apps/jaeger                 1/1     1            1           9m11s
-deployment.apps/prometheus             1/1     1            1           9m15s
-deployment.apps/ui-egressgateway       1/1     1            1           9m10s
-deployment.apps/ui-ingressgateway      1/1     1            1           9m10s
-deployment.apps/wasm-cacher-basic      1/1     1            1           8m49s
+NAME                                                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/elasticsearch-cdm-istiosystemjaeger-1   1/1     1            1           27m
+deployment.apps/elasticsearch-cdm-istiosystemjaeger-2   1/1     1            1           27m
+deployment.apps/elasticsearch-cdm-istiosystemjaeger-3   1/1     1            1           27m
+deployment.apps/grafana                                 1/1     1            1           27m
+deployment.apps/http-egressgateway                      1/1     1            1           27m
+deployment.apps/http-ingressgateway                     1/1     1            1           27m
+deployment.apps/istio-egressgateway                     1/1     1            1           27m
+deployment.apps/istio-ingressgateway                    1/1     1            1           27m
+deployment.apps/istiod-basic                            2/2     2            2           27m
+deployment.apps/jaeger-collector                        1/1     1            1           26m
+deployment.apps/jaeger-query                            1/1     1            1           26m
+deployment.apps/kiali                                   1/1     1            1           11m
+deployment.apps/prometheus                              1/1     1            1           27m
+deployment.apps/ui-egressgateway                        1/1     1            1           27m
+deployment.apps/ui-ingressgateway                       1/1     1            1           27m
+deployment.apps/wasm-cacher-basic                       1/1     1            1           11m
 
-NAME                                              DESIRED   CURRENT   READY   AGE
-replicaset.apps/grafana-99d6457f                  1         1         1       9m11s
-replicaset.apps/http-egressgateway-544f75d54d     1         1         1       9m12s
-replicaset.apps/http-ingressgateway-7b69c76759    1         1         1       9m12s
-replicaset.apps/istio-egressgateway-7fd685d798    1         1         1       9m12s
-replicaset.apps/istio-ingressgateway-79bf956b68   1         1         1       9m13s
-replicaset.apps/istiod-basic-6867796997           2         2         2       9m23s
-replicaset.apps/jaeger-8c46c4f58                  1         1         1       9m13s
-replicaset.apps/prometheus-69cd5746f              1         1         1       9m17s
-replicaset.apps/ui-egressgateway-84dc658d4d       1         1         1       9m12s
-replicaset.apps/ui-ingressgateway-5bb969c64c      1         1         1       9m12s
-replicaset.apps/wasm-cacher-basic-567568d75       1         1         1       8m51s
+NAME                                                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/elasticsearch-cdm-istiosystemjaeger-1-76478b4c     1         1         1       27m
+replicaset.apps/elasticsearch-cdm-istiosystemjaeger-2-65768cf499   1         1         1       27m
+replicaset.apps/elasticsearch-cdm-istiosystemjaeger-3-6d479dc      1         1         1       27m
+replicaset.apps/grafana-99d6457f                                   1         1         1       27m
+replicaset.apps/http-egressgateway-544f75d54d                      1         1         1       27m
+replicaset.apps/http-ingressgateway-7b69c76759                     1         1         1       27m
+replicaset.apps/istio-egressgateway-7fd685d798                     1         1         1       27m
+replicaset.apps/istio-ingressgateway-79bf956b68                    1         1         1       27m
+replicaset.apps/istiod-basic-6867796997                            2         2         2       27m
+replicaset.apps/jaeger-collector-5498fff9c9                        1         1         1       26m
+replicaset.apps/jaeger-query-5775b96574                            1         1         1       25m
+replicaset.apps/jaeger-query-645ff86884                            0         0         0       26m
+replicaset.apps/kiali-74c78868df                                   1         1         1       11m
+replicaset.apps/prometheus-69cd5746f                               1         1         1       27m
+replicaset.apps/ui-egressgateway-84dc658d4d                        1         1         1       27m
+replicaset.apps/ui-ingressgateway-5bb969c64c                       1         1         1       27m
+replicaset.apps/wasm-cacher-basic-567568d75                        1         1         1       11m
+
+NAME                                                   REFERENCE                     TARGETS            MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/jaeger-collector   Deployment/jaeger-collector   12%/90%, 10%/90%   1         100       1          26m
+
+NAME                                    SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+cronjob.batch/jaeger-es-index-cleaner   55 23 * * *   False     0        <none>          26m
 
 NAME                                            HOST/PORT                                                        PATH   SERVICES               PORT          TERMINATION          WILDCARD
 route.route.openshift.io/grafana                grafana-istio-system.apps.aro.example.opentlc.com                       grafana                <all>         reencrypt/Redirect   None
 route.route.openshift.io/http-ingressgateway    http-ingressgateway-istio-system.apps.aro.example.opentlc.com           http-ingressgateway    8080                               None
 route.route.openshift.io/istio-ingressgateway   istio-ingressgateway-istio-system.apps.aro.example.opentlc.com          istio-ingressgateway   8080                               None
 route.route.openshift.io/jaeger                 jaeger-istio-system.apps.aro.example.opentlc.com                        jaeger-query           https-query   reencrypt            None
+route.route.openshift.io/kiali                  kiali-istio-system.apps.aro.example.opentlc.com                         kiali                  20001         reencrypt/Redirect   None
 route.route.openshift.io/prometheus             prometheus-istio-system.apps.aro.example.opentlc.com                    prometheus             <all>         reencrypt/Redirect   None
 route.route.openshift.io/ui-ingressgateway      ui-ingressgateway-istio-system.apps.aro.example.opentlc.com             ui-ingressgateway      8080                               None
 
 NAME                                  ENDPOINTS                                                          AGE
-endpoints/grafana                     10.131.0.56:3001                                                   9m13s
-endpoints/http-egressgateway          10.129.2.68:15443,10.129.2.68:8080,10.129.2.68:8443                9m14s
-endpoints/http-ingressgateway         10.131.0.53:15443,10.131.0.53:15021,10.131.0.53:8080 + 1 more...   9m14s
-endpoints/istio-egressgateway         10.131.0.54:15020,10.131.0.54:8080,10.131.0.54:8443                9m14s
-endpoints/istio-ingressgateway        10.129.2.67:15020,10.129.2.67:8080,10.129.2.67:8443                9m15s
-endpoints/istiod-basic                10.129.2.65:8188,10.131.0.51:8188,10.129.2.65:15012 + 7 more...    9m25s
-endpoints/jaeger-agent                10.128.2.27:5778,10.128.2.27:5775,10.128.2.27:6832 + 1 more...     9m15s
-endpoints/jaeger-collector            10.128.2.27:14268,10.128.2.27:14250,10.128.2.27:9411 + 1 more...   9m15s
-endpoints/jaeger-collector-headless   10.128.2.27:14268,10.128.2.27:14250,10.128.2.27:9411 + 1 more...   9m15s
-endpoints/jaeger-query                10.128.2.27:16685,10.128.2.27:8443                                 9m15s
-endpoints/prometheus                  10.129.2.66:3001                                                   9m19s
-endpoints/ui-ingressgateway           10.131.0.52:15443,10.131.0.52:15021,10.131.0.52:8080 + 1 more...   9m14s
-endpoints/wasm-cacher-basic           10.129.2.69:8080                                                   8m53s
-endpoints/zipkin                      10.128.2.27:9411                                                   9m15s
+endpoints/elasticsearch               10.128.2.23:60000,10.129.2.18:60000,10.131.0.21:60000              27m
+endpoints/elasticsearch-cluster       10.128.2.23:9300,10.129.2.18:9300,10.131.0.21:9300                 27m
+endpoints/elasticsearch-metrics       10.128.2.23:60001,10.129.2.18:60001,10.131.0.21:60001              27m
+endpoints/grafana                     10.128.2.24:3001                                                   27m
+endpoints/http-egressgateway          10.131.0.19:15443,10.131.0.19:8080,10.131.0.19:8443                27m
+endpoints/http-ingressgateway         10.131.0.16:15443,10.131.0.16:15021,10.131.0.16:8080 + 1 more...   27m
+endpoints/istio-egressgateway         10.131.0.18:15020,10.131.0.18:8080,10.131.0.18:8443                27m
+endpoints/istio-ingressgateway        10.131.0.15:15020,10.131.0.15:8080,10.131.0.15:8443                27m
+endpoints/istiod-basic                10.128.2.22:8188,10.129.2.17:8188,10.128.2.22:15012 + 7 more...    27m
+endpoints/jaeger-collector            10.131.0.23:14268,10.131.0.23:14250,10.131.0.23:9411 + 1 more...   26m
+endpoints/jaeger-collector-headless   10.131.0.23:14268,10.131.0.23:14250,10.131.0.23:9411 + 1 more...   26m
+endpoints/jaeger-query                10.131.0.25:16685,10.131.0.25:8443                                 26m
+endpoints/kiali                       10.129.2.22:9090,10.129.2.22:20001                                 11m
+endpoints/prometheus                  10.131.0.14:3001                                                   27m
+endpoints/ui-egressgateway            10.131.0.20:15443,10.131.0.20:8080,10.131.0.20:8443                27m
+endpoints/ui-ingressgateway           10.131.0.17:15443,10.131.0.17:15021,10.131.0.17:8080 + 1 more...   27m
+endpoints/wasm-cacher-basic           10.129.2.21:8080                                                   11m
+endpoints/zipkin                      10.131.0.23:9411                                                   27m
 [root@localhost aro08]# 
 
 ```
