@@ -634,11 +634,11 @@ ui-ingressgateway      LoadBalancer   172.30.22.192    20.121.183.126   15021:32
 
 # oc label svc ui-ingressgateway istio-type=ui -n istio-system
 
-# oc get svc -l istio-type=http
+# oc get svc -l istio-type=http,istio=ingressgateway
 NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                                                      AGE
 http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   4h26m
 
-# oc get svc -l istio-type=ui
+# oc get svc -l istio-type=ui,istio=ingressgateway
 NAME                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
 ui-ingressgateway   LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   4h26m
 
