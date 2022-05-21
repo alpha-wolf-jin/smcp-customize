@@ -905,8 +905,7 @@ spec:
 # curl https://websingtel.example.com  --cacert example.com.crt
 hello-world-01
 
-# curl https://websingtel.example.com  --cacert example.com.crt
-hello-world-01
+
 [root@localhost aro08]# curl -kvvI https://websingtel.example.com  --cacert example.com.crt
 * Rebuilt URL to: https://websingtel.example.com/
 *   Trying 20.237.1.125...
