@@ -194,19 +194,19 @@ spec:
       service:
         ingress:
           contextPath: /kiali
-          #    jaeger:
-          #      name: jaeger
-          #      install:
-          #        storage:
-          #          type: Elasticsearch # or Memory
-          #          memory:
-          #            maxTraces: 100000
-          #          elasticsearch:
-          #            nodeCount: 3
-          #            storage: {}
-          #            redundancyPolicy: SingleRedundancy
-          #            indexCleaner: {}
-          #        ingress: {} # jaeger ingress configuration
+    jaeger:
+      name: jaeger
+      install:
+        storage:
+          type: Elasticsearch # or Memory
+          memory:
+            maxTraces: 100
+          elasticsearch:
+            nodeCount: 3
+            storage: {}
+            redundancyPolicy: SingleRedundancy
+            indexCleaner: {}
+        ingress: {} # jaeger ingress configuration
   runtime:
     components:
       pilot:
@@ -245,20 +245,25 @@ basic   10/10   ComponentsReady   ["default"]   2.1.2     76s
 ### Ingress & Egress Pods
 
 ```
-[root@localhost aro08]# oc get pod
-NAME                                    READY   STATUS    RESTARTS   AGE
-grafana-99d6457f-gbbrm                  2/2     Running   0          71s
-http-egressgateway-544f75d54d-dp5qt     1/1     Running   0          72s
-http-ingressgateway-7b69c76759-56xzs    1/1     Running   0          72s
-istio-egressgateway-7fd685d798-2dnk8    1/1     Running   0          72s
-istio-ingressgateway-79bf956b68-dd8nm   1/1     Running   0          73s
-istiod-basic-6867796997-nkprr           1/1     Running   0          83s
-istiod-basic-6867796997-vrrts           1/1     Running   0          82s
-jaeger-8c46c4f58-lc4k7                  2/2     Running   0          73s
-prometheus-69cd5746f-xkzfg              2/2     Running   0          77s
-ui-egressgateway-84dc658d4d-fdc5s       1/1     Running   0          72s
-ui-ingressgateway-5bb969c64c-br66p      1/1     Running   0          72s
-wasm-cacher-basic-567568d75-6xs79       1/1     Running   0          51s
+# oc get pod
+NAME                                                     READY   STATUS    RESTARTS      AGE
+elasticsearch-cdm-istiosystemjaeger-1-76478b4c-7c9sz     2/2     Running   0             22m
+elasticsearch-cdm-istiosystemjaeger-2-65768cf499-m4gv7   2/2     Running   0             22m
+elasticsearch-cdm-istiosystemjaeger-3-6d479dc-2q9fz      2/2     Running   0             22m
+grafana-99d6457f-2zpzq                                   2/2     Running   0             19m
+http-egressgateway-544f75d54d-wjr4q                      1/1     Running   0             22m
+http-ingressgateway-7b69c76759-9cmns                     1/1     Running   0             22m
+istio-egressgateway-7fd685d798-9k7lf                     1/1     Running   0             22m
+istio-ingressgateway-79bf956b68-9cztf                    1/1     Running   0             22m
+istiod-basic-6867796997-bxwc8                            1/1     Running   0             22m
+istiod-basic-6867796997-wbg6d                            1/1     Running   0             22m
+jaeger-collector-5498fff9c9-x98jr                        1/1     Running   1 (20m ago)   21m
+jaeger-query-5775b96574-6929f                            3/3     Running   1 (20m ago)   20m
+kiali-74c78868df-z75bd                                   1/1     Running   0             6m28s
+prometheus-69cd5746f-x6kxz                               2/2     Running   0             22m
+ui-egressgateway-84dc658d4d-hh2kg                        1/1     Running   0             22m
+ui-ingressgateway-5bb969c64c-s76vz                       1/1     Running   0             22m
+wasm-cacher-basic-567568d75-wrgp8                        1/1     Running   0             7m
 
 
 [root@localhost aro08]# oc get pod | grep -i gress
