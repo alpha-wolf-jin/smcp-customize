@@ -4,8 +4,8 @@ metadata:
   name: http-ingress-gateway
 spec:
   selector:
-    istio: ingressgateway # use istio default controller
-    istio-type: http
+    app: http-ingressgateway     # use istio specific controller
+    istio: ingressgateway        # use istio default controller
   servers:
   - port:
       number: 80

@@ -162,19 +162,19 @@ spec:
       service:
         ingress:
           contextPath: /kiali
-    jaeger:
-      name: jaeger
-      install:
-        storage:
-          type: Elasticsearch # or Memory
-          memory:
-            maxTraces: 100
-          elasticsearch:
-            nodeCount: 3
-            storage: {}
-            redundancyPolicy: SingleRedundancy
-            indexCleaner: {}
-        ingress: {} # jaeger ingress configuration
+          #    jaeger:
+          #      name: jaeger
+          #      install:
+          #        storage:
+          #          type: Elasticsearch # or Memory
+          #          memory:
+          #            maxTraces: 100000
+          #          elasticsearch:
+          #            nodeCount: 3
+          #            storage: {}
+          #            redundancyPolicy: SingleRedundancy
+          #            indexCleaner: {}
+          #        ingress: {} # jaeger ingress configuration
   runtime:
     components:
       pilot:

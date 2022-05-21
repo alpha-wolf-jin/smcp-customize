@@ -630,17 +630,14 @@ http-ingressgateway    LoadBalancer   172.30.188.252   20.121.183.22    15021:31
 istio-ingressgateway   ClusterIP      172.30.110.3     <none>           15020/TCP,80/TCP,443/TCP                                     79m
 ui-ingressgateway      LoadBalancer   172.30.22.192    20.121.183.126   15021:32540/TCP,80:30093/TCP,443:31261/TCP,15443:31850/TCP   79m
 
-# oc label svc http-ingressgateway istio-type=http -n istio-system
 
-# oc label svc ui-ingressgateway istio-type=ui -n istio-system
-
-# oc get svc -l istio-type=http,istio=ingressgateway
+# oc get svc -l app=http-ingressgateway,istio=ingressgateway -n istio-system
 NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                                                      AGE
-http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   4h26m
+http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   5h30m
 
-# oc get svc -l istio-type=ui,istio=ingressgateway
+# oc get svc -l app=ui-ingressgateway,istio=ingressgateway -n istio-system
 NAME                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
-ui-ingressgateway   LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   4h26m
+ui-ingressgateway   LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   5h30m
 
 
 # vim service-mesh-roll.yaml
@@ -717,8 +714,8 @@ metadata:
   name: http-ingress-gateway
 spec:
   selector:
-    istio: ingressgateway # use istio default controller
-    istio-type: http
+    app: http-ingressgateway
+    istio: ingressgateway
   servers:
   - port:
       number: 80
@@ -757,19 +754,31 @@ NAME                   GATEWAYS                   HOSTS   AGE
 http-ingress-gateway   ["http-ingress-gateway"]   ["*"]   40s
 
 # oc get svc
-NAME   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
-web    ClusterIP   172.30.131.112   <none>        8080/TCP,8443/TCP   2m49s
+NAME   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+web    ClusterIP   172.30.26.118   <none>        8080/TCP,8443/TCP   19m
 
+# oc get svc -l app=http-ingressgateway,istio=ingressgateway -n istio-system
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                                                      AGE
+http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   5h30m
 
-# oc get svc -l istio-type=http -n istio-system
-NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                                                      AGE
-http-ingressgateway   LoadBalancer   172.30.188.252   20.121.183.22   15021:31356/TCP,80:30576/TCP,443:30806/TCP,15443:30850/TCP   3h41m
+# curl http://20.237.1.125
+hello-world-01
 
+# oc get svc -l app=ui-ingressgateway,istio=ingressgateway -n istio-system
+NAME                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                      AGE
+ui-ingressgateway   LoadBalancer   172.30.217.183   20.237.1.223   15021:30518/TCP,80:32580/TCP,443:32691/TCP,15443:32000/TCP   5h30m
 
-# Due to the firewall, cannot access the external IP 20.121.183.22.  Login pod and access this external IP
-# oc rsh web-866dd6f769-vmpmw
+# Note: the failure is expected
+# curl http://20.237.1.223
+curl: (7) Failed to connect to 20.237.1.223 port 80: Connection timed out
 
-sh-4.4$ curl http://172.30.131.112:8080
+# vi /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+20.237.1.125   web.singtel.example.com
+
+# curl http://web.singtel.example.com
 hello-world-01
 
 ```
