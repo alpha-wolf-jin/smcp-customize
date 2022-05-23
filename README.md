@@ -1107,10 +1107,19 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 
 2. In Kiali, click **Graph**.
 
-![Create DNS ZONE](images/bookinfo-06.png)
+3. Select `bookinfo` from the **Namespace** list, and App graph from the Graph Type list
 
-![Create DNS ZONE](images/bookinfo-03.png)
+4. Click **Display idle nodes** **Display idle edges** from the Display menu.
 
-![Create DNS ZONE](images/bookinfo-05.png)
+5. Click **Traffic Animation** **Display idle edges** from the Display menu.
+
+![Create DNS ZONE](images/bookinfo-08.png)
+
+6. Select `ingress-lb` from the **Namespace** list, and App graph from the Graph Type list
+
+7. Repeat Step 4 & 5
+
+![Create DNS ZONE](images/bookinfo-09.png)
+
 
 
