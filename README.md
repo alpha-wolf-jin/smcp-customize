@@ -1133,3 +1133,26 @@ Select `productionpage.bookinfo.svc.cluster..` from the **Operation** list
 
 ![Create DNS ZONE](images/bookinfo-10.png)
 
+
+# Create Cert for BOOKINFO
+
+## Change to UI ingress gatewa
+
+```
+# oc edit gw bookinfo-gateway
+...
+spec:
+  selector:
+    app: ui-ingressgateway
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+
+```
+
+![Create DNS ZONE](images/bookinfo-11.png)
