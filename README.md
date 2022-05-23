@@ -1087,4 +1087,10 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 1. Obtain the address for the Kiali web console.
    - Log in to the OpenShift Container Platform web console as a user with cluster-admin rights.
    - Navigate to **`Networking → Routes.'**
+   - On the **Routes** page, select the control plane project, for example `istio-system`, from the **Namespace** menu.
+   - Click the link in the **Location** column for Kiali
+   - Click **Log In With OpenShift**. The Kiali **Overview** screen presents tiles for each project namespace.
+
+
+![Create DNS ZONE](images/bookinfo-02.png)
 
