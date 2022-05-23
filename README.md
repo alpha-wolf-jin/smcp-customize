@@ -981,3 +981,103 @@ x-envoy-upstream-service-time: 4
 * Connection #0 to host websingtel.example.com left intact
 
 ```
+
+# Installing the Bookinfo application
+
+https://docs.openshift.com/container-platform/4.6/service_mesh/v1x/prepare-to-deploy-applications-ossm.html#ossm-tutorial-bookinfo-install_deploying-applications-ossm-v1x
+
+```
+# oc new-project bookinfo
+
+# vim ./service-mesh-roll.yaml
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+  - ingress-lb
+  - bookinfo
+
+# oc apply -f service-mesh-roll.yaml -n istio-system
+
+# oc get smmr -n istio-system -o wide
+NAME      READY   STATUS       AGE   MEMBERS
+default   2/2     Configured   34h   ["bookinfo","ingress-lb"]
+
+# oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.1/samples/bookinfo/platform/kube/bookinfo.yaml
+
+# wget https://raw.githubusercontent.com/Maistra/istio/maistra-2.1/samples/bookinfo/networking/bookinfo-gateway.yaml
+
+# add "app: http-ingressgateway"
+# vim bookinfo-gateway.yaml 
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  selector:
+    app: http-ingressgateway
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - bookinfo-gateway
+  http:
+  - match:
+    - uri:
+        exact: /productpage
+    - uri:
+        prefix: /static
+    - uri:
+        exact: /login
+    - uri:
+        exact: /logout
+    - uri:
+        prefix: /api/v1/products
+    route:
+    - destination:
+        host: productpage
+        port:
+          number: 9080
+
+# oc apply -f bookinfo-gateway.yaml
+gateway.networking.istio.io/bookinfo-gateway created
+virtualservice.networking.istio.io/bookinfo created
+
+# oc -n istio-system get svc -l app=http-ingressgateway,istio=ingressgateway
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                                                      AGE
+http-ingressgateway   LoadBalancer   172.30.47.117   20.237.1.125   15021:30792/TCP,80:30619/TCP,443:30027/TCP,15443:32729/TCP   39h
+
+# wget https://raw.githubusercontent.com/Maistra/istio/maistra-2.1/samples/bookinfo/networking/destination-rule-all.yaml
+
+# oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/istio/maistra-2.1/samples/bookinfo/networking/destination-rule-all.yaml
+
+# oc get pods -n bookinfo
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-75cfbc6cd5-n5j5p       2/2     Running   0          24m
+productpage-v1-5b9687fb75-vbj68   2/2     Running   0          24m
+ratings-v1-579dd76bbf-2drwm       2/2     Running   0          24m
+reviews-v1-7746457b7-qp447        2/2     Running   0          24m
+reviews-v2-777684cbf7-4tlvc       2/2     Running   0          24m
+reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
+
+
+```
+> access **'20.237.1.125'** via browser
+
+![Create DNS ZONE](images/bookinfo-01.png)

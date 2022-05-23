@@ -6,4 +6,4 @@ metadata:
 spec:
   members:
   - ingress-lb
-
+  - bookinfo
