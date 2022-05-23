@@ -1111,6 +1111,6 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 
 ![Create DNS ZONE](images/bookinfo-03.png)
 
-![Create DNS ZONE](images/bookinfo-04.png)
+![Create DNS ZONE](images/bookinfo-05.png)
 
 
