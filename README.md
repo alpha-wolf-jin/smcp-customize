@@ -1122,4 +1122,13 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 ![Create DNS ZONE](images/bookinfo-09.png)
 
 
+# Jaeger UI
 
+Click **Distributed Tracing** in Kiali UI
+
+Select `http-ingressgateway` from the **Service** list
+
+Select `productionpage.bookinfo.svc.cluster..` from the **Operation** list
+>`web.ingress-lb.svc.cluster.local:8080` has no any data, since it does define tracing data in apps
+
+![Create DNS ZONE](images/bookinfo-10.png)
