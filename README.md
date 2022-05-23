@@ -1132,3 +1132,4 @@ Select `productionpage.bookinfo.svc.cluster..` from the **Operation** list
 >`web.ingress-lb.svc.cluster.local:8080` has no any data, since it does define tracing data in apps
 
 ![Create DNS ZONE](images/bookinfo-10.png)
+
