@@ -1102,11 +1102,15 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
    - Click **Log In With OpenShift**. The Kiali **Overview** screen presents tiles for each project namespace.
 
 
-![Create DNS ZONE](images/bookinfo-06.png)
-
 ![Create DNS ZONE](images/bookinfo-02.png)
+
 
 2. In Kiali, click **Graph**.
 
+![Create DNS ZONE](images/bookinfo-06.png)
+
+![Create DNS ZONE](images/bookinfo-03.png)
+
+![Create DNS ZONE](images/bookinfo-04.png)
 
 
