@@ -1081,3 +1081,10 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 > access **'20.237.1.125'** via browser
 
 ![Create DNS ZONE](images/bookinfo-01.png)
+
+# Procedure from Kiali web console
+
+1. Obtain the address for the Kiali web console.
+   - Log in to the OpenShift Container Platform web console as a user with cluster-admin rights.
+   - Navigate to **`Networking → Routes.'**
+
