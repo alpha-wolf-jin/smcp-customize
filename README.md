@@ -1156,3 +1156,70 @@ spec:
 ```
 
 ![Create DNS ZONE](images/bookinfo-11.png)
+
+
+# Self-signed certificates and key generation
+
+## Create a root CA certificate and private key to sign the certificates for your services
+
+```
+# openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=ui-example Inc./CN=ui-example.com' -keyout ui-example.com.key -out ui-example.com.crt
+
+```
+
+## Create a certificate and a private key for *.ui-example.com
+
+```
+# openssl req -out any.ui-example.com.csr -newkey rsa:2048 -nodes -keyout any.ui-example.com.key -subj "/CN=*.ui-example.com/O=ui organization"
+
+# openssl x509 -req -days 365 -CA ui-example.com.crt -CAkey ui-example.com.key -set_serial 0 -in any.ui-example.com.csr -out bookinfo.ui-example.com.crt
+
+# ll
+total 20
+-rw-r--r--. 1 root root  936 May 23 21:48 any.ui-example.com.csr
+-rw-------. 1 root root 1704 May 23 21:48 any.ui-example.com.key
+-rw-r--r--. 1 root root 1054 May 23 21:51 bookinfo.ui-example.com.crt
+-rw-r--r--. 1 root root 1196 May 23 21:45 ui-example.com.crt
+-rw-------. 1 root root 1704 May 23 21:45 ui-example.com.key
+
+```
+
+## Create a secret for serving the certificate in project istio-system
+
+```
+# oc create secret tls bookinfocert --key=any.ui-example.com.key --cert=bookinfo.ui-example.com.crt -n istio-system
+
+```
+
+## Update bookinfo-gateway gw in project bookinfo
+
+```
+# oc edit gw bookinfo-gateway -n bookinfo
+...
+spec:
+  selector:
+    app: ui-ingressgateway
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - 'bookinfo.ui-example.com'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: bookinfocert
+      mode: SIMPLE
+
+# vi /etc/hosts
+[root@localhost ui-cert]# cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+20.237.1.125   websingtel.example.com
+20.237.1.223   bookinfo.ui-example.com
+
+```
+
+![Create DNS ZONE](images/bookinfo-12.png)
+
