@@ -986,6 +986,14 @@ x-envoy-upstream-service-time: 4
 
 https://docs.openshift.com/container-platform/4.6/service_mesh/v1x/prepare-to-deploy-applications-ossm.html#ossm-tutorial-bookinfo-install_deploying-applications-ossm-v1x
 
+> The bookinfo-gateway selector has to like the below. Otherwise, the Kiali Graph has problem
+
+```
+Spec:
+  Selector:
+    Istio:  ingressgateway
+```
+
 ```
 # oc new-project bookinfo
 
@@ -1010,7 +1018,6 @@ default   2/2     Configured   34h   ["bookinfo","ingress-lb"]
 
 # wget https://raw.githubusercontent.com/Maistra/istio/maistra-2.1/samples/bookinfo/networking/bookinfo-gateway.yaml
 
-# add "app: http-ingressgateway"
 # vim bookinfo-gateway.yaml 
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -1018,7 +1025,6 @@ metadata:
   name: bookinfo-gateway
 spec:
   selector:
-    app: http-ingressgateway
     istio: ingressgateway # use istio default controller
   servers:
   - port:
@@ -1093,4 +1099,8 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 
 
 ![Create DNS ZONE](images/bookinfo-02.png)
+
+2. In Kiali, click **Graph**.
+
+
 
