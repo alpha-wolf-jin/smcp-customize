@@ -1088,6 +1088,10 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
 
 ![Create DNS ZONE](images/bookinfo-01.png)
 
+> access **'20.237.1.223'** via browser
+
+![Create DNS ZONE](images/bookinfo-07.png)
+
 # Procedure from Kiali web console
 
 1. Obtain the address for the Kiali web console.
@@ -1097,6 +1101,8 @@ reviews-v3-76fd7d799-75ptx        2/2     Running   0          24m
    - Click the link in the **Location** column for Kiali
    - Click **Log In With OpenShift**. The Kiali **Overview** screen presents tiles for each project namespace.
 
+
+![Create DNS ZONE](images/bookinfo-06.png)
 
 ![Create DNS ZONE](images/bookinfo-02.png)
 
